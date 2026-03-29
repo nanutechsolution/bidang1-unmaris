@@ -34,8 +34,8 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-    'siakad' => [
-        'key' => env('SIAKAD_API_KEY'),
-    ],
 
+    'siakad' => [
+        'url' => env('SIAKAD_API_URL', 'http://127.0.0.1:8001/api'),
+    ],
 ];

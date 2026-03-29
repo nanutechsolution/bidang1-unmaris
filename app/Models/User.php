@@ -8,31 +8,29 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasUuids;
 
     /**
      * The attributes that are mass assignable.
-     * Pastikan role dan unit_id ditambahkan di sini.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'name',
         'email',
         'password',
-        'role',     // Tambahan untuk hak akses
-        'unit_id',  // Tambahan untuk mengetahui asal prodi user
+        'role',
+        'is_active',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'password',
@@ -49,22 +47,17 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
-    /**
-     * Relasi ke Unit / Prodi (User berasal dari satu unit)
-     */
-    public function unit(): BelongsTo
+    public function isAdmin(): bool
     {
-        return $this->belongsTo(Unit::class);
+        return $this->role === 'admin';
     }
 
-    /**
-     * Relasi ke Dokumen (Satu user bisa mengunggah banyak dokumen)
-     */
-    public function documents(): HasMany
+    public function isOperator(): bool
     {
-        return $this->hasMany(Document::class);
+        return $this->role === 'operator' || $this->role === 'admin'; // Admin juga bisa melakukan tugas operator
     }
 }
